@@ -1,0 +1,113 @@
+const mongoose=require('mongoose');
+
+const VoiceAgentSchema=new mongoose.Schema({
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true
+    },
+    name:{
+        type:String,
+        required:true
+    },
+    businessName:{
+        type:String,
+        default:''
+    },
+    template:{
+        type:String,
+        default:'custom'
+    },
+    status:{
+        type:String,
+        enum:['draft','live','paused'],
+        default:'draft'
+    },
+    prompt:{
+        type:String,
+        required:true
+    },
+    timezone:{
+        type:String,
+        default:'UTC'
+    },
+
+    behaviour:{
+        tone:{type:String,default:'Warm'},
+        formality:{type:String,default:'balanced'},
+        replyLength:{type:String,default:'brief'},
+        initiative:{type:String,default:'suggests'},
+        greeting:{type:String,default:''},
+        rules:{type:String,default:''},
+        collect:[String],
+        actions:{
+            book:{type:Boolean,default:false},
+            sms:{type:Boolean,default:false},
+            message:{type:Boolean,default:false},
+            crm:{type:Boolean,default:false},
+            transfer:{type:Boolean,default:false}
+        },
+        backchannel:{type:Boolean,default:true}
+    },
+
+    call:{
+        direction:{type:String,enum:['inbound','outbound','both'],default:'inbound'},
+        number:{
+            mode:{type:String,enum:['new','own'],default:'new'},
+            country:String,
+            number:String,      
+            assigned:String     
+        },
+        transferNumber:String,
+        hours:{                
+            days:[String],
+            from:String,
+            to:String,
+            afterHours:{type:String,default:'message'}
+        },
+        maxMinutes:{type:Number,default:10},
+        silenceHangupSeconds:{type:Number,default:20},
+        voicemailDetection:{type:Boolean,default:true},
+        recordCalls:{type:Boolean,default:true},
+        tellCallerAboutRecording:{type:Boolean,default:true}
+    },
+
+    tts:{
+        voiceId:{type:String,required:true},
+        speed:{type:Number,default:1},
+        pitch:{type:Number,default:1},
+        cloneFromSample:{type:Boolean,default:false},
+        voiceSample:{
+            name:String,
+            url:String
+        }
+    },
+
+    stt:{
+        languages:{type:[String],default:['en-US']},
+        mode:{type:String,default:'fast'},
+        noiseSuppression:{type:Boolean,default:true},
+        autoDetectLanguage:{type:Boolean,default:false},
+        interruptionSensitivity:{type:String,default:'medium'},
+        endOfSpeechWaitSeconds:{type:Number,default:0.6}
+    },
+
+    documents:[
+        {
+            name:String,
+            url:String,
+            size:Number
+        }
+    ],
+
+    totalCalls:{
+        type:Number,
+        default:0
+    },
+    lastCallAt:Date
+},
+{
+    timestamps:true,
+});
+
+module.exports=mongoose.model('VoiceAgent',VoiceAgentSchema);
